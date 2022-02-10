@@ -1,0 +1,3 @@
+[submodule "cmu15.213"]
+	path = cmu15.213
+	url = git@github.com:joeshow79/ICS-15213-CSAPP3e-CMU.git
