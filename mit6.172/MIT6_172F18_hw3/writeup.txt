@@ -1,0 +1,567 @@
+[writeup-1]
+Write-up 1: Look at the assembly code above. The compiler has translated the code to set
+the start index at −216 and adds to it for each memory access. Why doesn’t it set the start
+index to 0 and use small positive offsets? 
+[jason] In my setup, actually the start index is from 0.
+
+[writeup-2]
+Write-up 2: This code is still not aligned when using AVX2 registers. Fix the code to make
+sure it uses aligned moves for the best performance. 
+
+[writeup-3]
+Write-up 3: Provide a theory for why the compiler is generating dramatically different
+assembly.
+[jason] If  there is branch, it's not possible to do vectorization.
+
+[writeup-4]
+Write-up 4: Inspect the assembly and determine why the assembly does not include
+instructions with vector registers. Do you think it would be faster if it did vectorize?
+Explain. 
+[jason]TBD
+
+[writeup-5]
+Write-up 5: Check the assembly and verify that it does in fact vectorize properly. Also what
+do you notice when you run the command
+$ clang -O3 example4.c -o example4; ./example4
+with and without the -ffast-math flag? Specifically, why do you a see a difference in the
+output. 
+[jason]
+build without -ffast-math
+.LBB0_1:                                # %for.body
+                                        # =>This Inner Loop Header: Depth=1
+        #DEBUG_VALUE: test:a <- $rdi
+        #DEBUG_VALUE: test:y <- $xmm0
+        #DEBUG_VALUE: test:i <- $rax
+        .loc    1 18 7 prologue_end     # example4.c:18:7
+        addsd   (%rdi,%rax,8), %xmm0
+.Ltmp1:
+        #DEBUG_VALUE: test:y <- $xmm0
+        addsd   8(%rdi,%rax,8), %xmm0
+.Ltmp2:
+        #DEBUG_VALUE: test:y <- $xmm0
+        addsd   16(%rdi,%rax,8), %xmm0
+.Ltmp3:
+        #DEBUG_VALUE: test:y <- $xmm0
+        addsd   24(%rdi,%rax,8), %xmm0
+.Ltmp4:
+        #DEBUG_VALUE: test:y <- $xmm0
+        addsd   32(%rdi,%rax,8), %xmm0
+.Ltmp5:
+        #DEBUG_VALUE: test:y <- $xmm0
+        addsd   40(%rdi,%rax,8), %xmm0
+.Ltmp6:
+        #DEBUG_VALUE: test:y <- $xmm0
+        addsd   48(%rdi,%rax,8), %xmm0
+.Ltmp7:
+        #DEBUG_VALUE: test:y <- $xmm0
+        addsd   56(%rdi,%rax,8), %xmm0
+.Ltmp8:
+        #DEBUG_VALUE: test:y <- $xmm0
+        .loc    1 17 26                 # example4.c:17:26
+        addq    $8, %rax
+.Ltmp9:
+        #DEBUG_VALUE: test:i <- $rax
+        .loc    1 17 17 is_stmt 0       # example4.c:17:17
+        cmpq    $65536, %rax            # imm = 0x10000
+.Ltmp10:
+        .loc    1 17 3                  # example4.c:17:3
+        jne     .LBB0_1
+
+build with -ffast-math
+.LBB0_1:                                # %vector.body
+                                        # =>This Inner Loop Header: Depth=1
+        #DEBUG_VALUE: test:y <- 0.000000e+00
+        #DEBUG_VALUE: test:i <- 0
+        #DEBUG_VALUE: test:a <- $rdi
+        .loc    1 18 7 prologue_end     # example4.c:18:7
+        addpd   (%rdi,%rax,8), %xmm0
+        addpd   16(%rdi,%rax,8), %xmm1
+        addpd   32(%rdi,%rax,8), %xmm0
+        addpd   48(%rdi,%rax,8), %xmm1
+        addpd   64(%rdi,%rax,8), %xmm0
+        addpd   80(%rdi,%rax,8), %xmm1
+        addpd   96(%rdi,%rax,8), %xmm0
+        addpd   112(%rdi,%rax,8), %xmm1
+.Ltmp2:
+        .loc    1 17 26                 # example4.c:17:26
+        addq    $16, %rax
+        cmpq    $65536, %rax            # imm = 0x10000
+        jne     .LBB0_1
+
+[writeup-6]
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# ./loop
+Elapsed execution time: 0.087430 sec; N: 1024, I: 100000, __OP__: +, __TYPE__: uint32_t
+
+
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make VECTORIZE=1
+clang-10 -Wall -std=gnu99 -g -O3 -DNDEBUG -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -ffast-math  -c loop.c
+loop.c:70:9: remark: vectorized loop (vectorization width: 4, interleaved count: 2) [-Rpass=loop-vectorize]
+        for (j = 0; j < N; j++) {
+        ^
+clang-10 -o loop loop.o -lrt
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# ./loop
+Elapsed execution time: 0.031146 sec; N: 1024, I: 100000, __OP__: +, __TYPE__: uint32_t
+[jason] Since the data type is uint32_t, it could be induced from the result that the width of the default vector register is 32*4 = 128.
+Why the ration is 4 is because the speed up ration is 0.087430/0.031146 ~= 3.x.
+
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make VECTORIZE=1 AVX2=1
+clang-10 -Wall -std=gnu99 -g -O3 -DNDEBUG -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -ffast-math -mavx2  -c loop.c
+loop.c:70:9: remark: vectorized loop (vectorization width: 8, interleaved count: 4) [-Rpass=loop-vectorize]
+        for (j = 0; j < N; j++) {
+        ^
+clang-10 -o loop loop.o -lrt
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# ./loop
+Elapsed execution time: 0.016925 sec; N: 1024, I: 100000, __OP__: +, __TYPE__: uint32_t
+[jason]Bit width of AVX2 is 128 * 2 = 256.
+
+[writeup-7]
+Write-up 7: Compare the contents of loop.s when the VECTORIZE flag is set/not set. Which
+instruction (copy its text here) is responsible for the vector add operation? Which
+[jason] 
+.LBB0_2:                                # %vector.body
+                                        #   Parent Loop BB0_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	movdqa	4128(%rsp,%rax,4), %xmm0
+	movdqa	4144(%rsp,%rax,4), %xmm1
+	movdqa	4160(%rsp,%rax,4), %xmm2
+	movdqa	4176(%rsp,%rax,4), %xmm3
+	paddd	8224(%rsp,%rax,4), %xmm0
+	paddd	8240(%rsp,%rax,4), %xmm1
+	movdqa	%xmm0, 32(%rsp,%rax,4)
+	movdqa	%xmm1, 48(%rsp,%rax,4)
+	paddd	8256(%rsp,%rax,4), %xmm2
+	paddd	8272(%rsp,%rax,4), %xmm3
+	movdqa	%xmm2, 64(%rsp,%rax,4)
+	movdqa	%xmm3, 80(%rsp,%rax,4)
+	addq	$16, %rax
+	cmpq	$1024, %rax             # imm = 0x400
+	jne	.LBB0_2
+>
+instruction (copy its text here) is responsible for the vector add operation when you
+additionally pass AVX2=1? You can find an x86 instruction manual on LMOD. Look for
+[jason]
+.LBB0_2:                                # %vector.body
+                                        #   Parent Loop BB0_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	vmovdqu	4128(%rsp,%rax,4), %ymm0
+	vmovdqu	4160(%rsp,%rax,4), %ymm1
+	vmovdqu	4192(%rsp,%rax,4), %ymm2
+	vmovdqu	4224(%rsp,%rax,4), %ymm3
+	vpaddd	8224(%rsp,%rax,4), %ymm0, %ymm0
+	vpaddd	8256(%rsp,%rax,4), %ymm1, %ymm1
+	vpaddd	8288(%rsp,%rax,4), %ymm2, %ymm2
+	vpaddd	8320(%rsp,%rax,4), %ymm3, %ymm3
+	vmovdqu	%ymm0, 32(%rsp,%rax,4)
+	vmovdqu	%ymm1, 64(%rsp,%rax,4)
+	vmovdqu	%ymm2, 96(%rsp,%rax,4)
+	vmovdqu	%ymm3, 128(%rsp,%rax,4)
+	addq	$32, %rax
+	cmpq	$1024, %rax             # imm = 0x400
+	jne	.LBB0_2
+>
+MMX and SSE2 instructions, which are vector operations. To make the assembly code more
+readable it may be a good idea to remove debug symbols from release builds by moving the
+-g and -gdwarf-3 CFLAGS in your Makefile. It might also be a good idea to turn off loop
+unrolling with the -fno-unroll-loops flag while you study the assembly code. 
+[jason]
+.LBB0_2:                                # %vector.body
+                                        #   Parent Loop BB0_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	vmovdqu	4128(%rsp,%rax,4), %ymm0
+	vpaddd	8224(%rsp,%rax,4), %ymm0, %ymm0
+	vmovdqu	%ymm0, 32(%rsp,%rax,4)
+	addq	$8, %rax
+	cmpq	$1024, %rax             # imm = 0x400
+	jne	.LBB0_2
+>
+
+[writeup-8]
+Write-up 8: Use the __OP__ macro to experiment with different operators in the data parallel
+loop. For some operations, you will get division by zero errors because we initialize array B
+to be full of zerosfix this problem in any way you like. Do any versions of the loop not
+vectorize with VECTORIZE=1 AVX2=1? Study the assembly code for << with just VECTORIZE=1
+and explain how it differs from the AVX2 version. 
+[jason]
+For * operator without vectorization
+.LBB0_2:                                # %for.body10
+                                        #   Parent Loop BB0_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	movl	4128(%rsp,%rax,4), %ecx
+	imull	8224(%rsp,%rax,4), %ecx
+	movl	%ecx, 32(%rsp,%rax,4)
+	addq	$1, %rax
+	cmpq	$1024, %rax             # imm = 0x400
+	jne	.LBB0_2
+For * operator with vectorization VECTORIZE=1
+.LBB0_2:                                # %vector.body
+                                        #   Parent Loop BB0_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	movdqa	8224(%rsp,%rax,4), %xmm0
+	movdqa	4128(%rsp,%rax,4), %xmm1
+	pshufd	$245, %xmm1, %xmm2      # xmm2 = xmm1[1,1,3,3]
+	pmuludq	%xmm0, %xmm1
+	pshufd	$232, %xmm1, %xmm1      # xmm1 = xmm1[0,2,2,3]
+	pshufd	$245, %xmm0, %xmm0      # xmm0 = xmm0[1,1,3,3]
+	pmuludq	%xmm0, %xmm2
+	pshufd	$232, %xmm2, %xmm0      # xmm0 = xmm2[0,2,2,3]
+	punpckldq	%xmm0, %xmm1    # xmm1 = xmm1[0],xmm0[0],xmm1[1],xmm0[1]
+	movdqa	%xmm1, 32(%rsp,%rax,4)
+	addq	$4, %rax
+	cmpq	$1024, %rax             # imm = 0x400
+	jne	.LBB0_2
+For * operator with vectorization VECTORIZE=1 AVX2=1
+.LBB0_2:                                # %vector.body
+                                        #   Parent Loop BB0_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	vmovdqu	4128(%rsp,%rax,4), %ymm0
+	vpmulld	8224(%rsp,%rax,4), %ymm0, %ymm0
+	vmovdqu	%ymm0, 32(%rsp,%rax,4)
+	addq	$8, %rax
+	cmpq	$1024, %rax             # imm = 0x400
+	jne	.LBB0_2
+
+For << operator without vectorization
+.LBB0_2:                                # %for.body10
+                                        #   Parent Loop BB0_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	movl	8224(%rsp,%rax,4), %edx
+	movzbl	4128(%rsp,%rax,4), %ecx
+	shll	%cl, %edx
+	movl	%edx, 32(%rsp,%rax,4)
+	addq	$1, %rax
+	cmpq	$1024, %rax             # imm = 0x400
+	jne	.LBB0_2
+For << operator with vectorization VECTORIZE=1;
+different from what the homework said, the assemble code shows that there is vectorization in this configuration.
+(https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-172-performance-engineering-of-software-systems-fall-2018/assignments/MIT6_172F18hw3.pdf)
+.LBB0_2:                                # %vector.body
+                                        #   Parent Loop BB0_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	movdqa	8224(%rsp,%rax,4), %xmm1
+	movdqa	4128(%rsp,%rax,4), %xmm2
+	pslld	$23, %xmm2
+	paddd	%xmm0, %xmm2
+	cvttps2dq	%xmm2, %xmm2
+	pshufd	$245, %xmm1, %xmm3      # xmm3 = xmm1[1,1,3,3]
+	pmuludq	%xmm2, %xmm1
+	pshufd	$232, %xmm1, %xmm1      # xmm1 = xmm1[0,2,2,3]
+	pshufd	$245, %xmm2, %xmm2      # xmm2 = xmm2[1,1,3,3]
+	pmuludq	%xmm3, %xmm2
+	pshufd	$232, %xmm2, %xmm2      # xmm2 = xmm2[0,2,2,3]
+	punpckldq	%xmm2, %xmm1    # xmm1 = xmm1[0],xmm2[0],xmm1[1],xmm2[1]
+	movdqa	%xmm1, 32(%rsp,%rax,4)
+	addq	$4, %rax
+	cmpq	$1024, %rax             # imm = 0x400
+	jne	.LBB0_2
+For << operator with vectorization VECTORIZE=1 AVX2=1
+.LBB0_2:                                # %vector.body
+                                        #   Parent Loop BB0_1 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	vmovdqu	8224(%rsp,%rax,4), %ymm0
+	vpsllvd	4128(%rsp,%rax,4), %ymm0, %ymm0
+	vmovdqu	%ymm0, 32(%rsp,%rax,4)
+	addq	$8, %rax
+	cmpq	$1024, %rax             # imm = 0x400
+	jne	.LBB0_2
+
+[writeup-9]
+Write-up 9: What is the new speedup for the vectorized code, over the unvectorized code,
+and for the AVX2 vectorized code, over the unvectorized code, when you change __TYPE__
+to uint64_t, uint32_t, uint16_t and uint8_t? For each experiment, set __OP__ to + and do
+not change N. 
+[jason]
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make VECTORIZE=1 AVX2=1 && ./loop
+clang-10 -Wall -std=gnu99 -O3 -DNDEBUG -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -ffast-math -mavx2  -c loop.c
+loop.c:71:9: remark: vectorized loop (vectorization width: 4, interleaved count: 4) [-Rpass=loop-vectorize]
+        for (j = 0; j < N; j++) {
+        ^
+clang-10 -o loop loop.o -lrt
+Elapsed execution time: 0.058715 sec; N: 1024, I: 100000, __OP__: +, __TYPE__: uint64_t
+
+
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make VECTORIZE=1 AVX2=1 && ./loop
+clang-10 -Wall -std=gnu99 -O3 -DNDEBUG -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -ffast-math -mavx2  -c loop.c
+loop.c:71:9: remark: vectorized loop (vectorization width: 8, interleaved count: 4) [-Rpass=loop-vectorize]
+        for (j = 0; j < N; j++) {
+        ^
+clang-10 -o loop loop.o -lrt
+Elapsed execution time: 0.016717 sec; N: 1024, I: 100000, __OP__: +, __TYPE__: uint32_t
+
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make VECTORIZE=1 AVX2=1 && ./loop
+clang-10 -Wall -std=gnu99 -O3 -DNDEBUG -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -ffast-math -mavx2  -c loop.c
+loop.c:71:9: remark: vectorized loop (vectorization width: 16, interleaved count: 2) [-Rpass=loop-vectorize]
+        for (j = 0; j < N; j++) {
+        ^
+clang-10 -o loop loop.o -lrt
+Elapsed execution time: 0.000063 sec; N: 1024, I: 100000, __OP__: +, __TYPE__: uint16_t
+
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make VECTORIZE=1 AVX2=1 && ./loop
+clang-10 -Wall -std=gnu99 -O3 -DNDEBUG -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -ffast-math -mavx2  -c loop.c
+loop.c:71:9: remark: vectorized loop (vectorization width: 32, interleaved count: 4) [-Rpass=loop-vectorize]
+        for (j = 0; j < N; j++) {
+        ^
+clang-10 -o loop loop.o -lrt
+Elapsed execution time: 0.000077 sec; N: 1024, I: 100000, __OP__: +, __TYPE__: uint8_t
+
+[writeup-10]
+Write-up 10: You already determined that uint64_t yields the least performance
+improvement for vectorized codes (Section 3.1.4). Test a vector multiplication (i.e., __OP__ is
+*) using uint64_t arrays. What happens to the AVX2 vectorized code’s speedup relative to
+the unvectorized code (also using uint64_t and *)? What about when you set the data type
+width to be smaller  say uint8_t? 
+
+[jason]
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make VECTORIZE=1 AVX2=1 && ./loop
+clang-10 -Wall -std=gnu99 -O3 -DNDEBUG -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -ffast-math -mavx2  -c loop.c
+loop.c:71:9: remark: vectorized loop (vectorization width: 4, interleaved count: 4) [-Rpass=loop-vectorize]
+        for (j = 0; j < N; j++) {
+        ^
+clang-10 -o loop loop.o -lrt
+Elapsed execution time: 0.100481 sec; N: 1024, I: 100000, __OP__: *, __TYPE__: uint64_t
+
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make && ./loop
+clang-10 -Wall -std=gnu99 -O3 -DNDEBUG -fno-vectorize  -c loop.c
+clang-10 -o loop loop.o -lrt
+Elapsed execution time: 0.101165 sec; N: 1024, I: 100000, __OP__: *, __TYPE__: uint64_t
+
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make VECTORIZE=1 AVX2=1 && ./loop
+clang-10 -Wall -std=gnu99 -O3 -DNDEBUG -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -ffast-math -mavx2  -c loop.c
+loop.c:71:9: remark: vectorized loop (vectorization width: 32, interleaved count: 1) [-Rpass=loop-vectorize]
+        for (j = 0; j < N; j++) {
+        ^
+clang-10 -o loop loop.o -lrt
+Elapsed execution time: 0.000087 sec; N: 1024, I: 100000, __OP__: *, __TYPE__: uint8_t
+
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make && ./loop
+clang-10 -Wall -std=gnu99 -O3 -DNDEBUG -fno-vectorize  -c loop.c
+clang-10 -o loop loop.o -lrt
+Elapsed execution time: 0.074227 sec; N: 1024, I: 100000, __OP__: *, __TYPE__: uint8_t
+
+[writeup-11]
+Write-up 11: Open up the aws-perf-report tool for the AVX2 vectorized multiply code
+using uint64_t (as you did in Recitation 2). Remember to first use the awsrun perf record
+tool to collect a performance report. Does the vector multiply take the most time? If not,
+where is time going instead? Now change __OP__ back to +, rerun the experiment and
+inspect aws-perf-report again. How does the percentage of time taken by the AVX2 vector
+add instruction compare to the time spent on the AVX2 vector multiply instruction? 
+[jason] perf not work on docker, test on host
+For operator * and uint64_t
+
+(base) ➜ /home/jiaosong/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3  on git:master x>perf record ./loop
+WARNING: Kernel address maps (/proc/{kallsyms,modules}) are restricted,
+check /proc/sys/kernel/kptr_restrict.
+
+Samples in kernel functions may not be resolved if a suitable vmlinux
+file is not found in the buildid cache or in the vmlinux path.
+
+Samples in kernel modules won't be resolved at all.
+
+If some relocation was applied (e.g. kexec) symbols may be misresolved
+even with a suitable vmlinux or kallsyms file.
+
+Cannot read kernel map
+Couldn't record kernel reference relocation symbol
+Symbol resolution may be skewed if relocation was used (e.g. kexec).
+Check /proc/kallsyms permission or run as root.
+Elapsed execution time: 0.100856 sec; N: 1024, I: 100000, __OP__: *, __TYPE__: uint64_t
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.017 MB perf.data (417 samples) ]
+(base) ➜ /home/jiaosong/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3  on git:master x>
+(base) ➜ /home/jiaosong/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3  on git:master x>perf report
+
+main  /home/jiaosong/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3/loop
+  0.25 │       vpsrlq $0x20,%ymm2,%ymm8
+  4.20 │       vpmulu %ymm5,%ymm8,%ymm8
+  1.48 │       vpaddq %ymm4,%ymm8,%ymm4
+  5.93 │       vpsllq $0x20,%ymm4,%ymm4    [jason] Time hotspot
+  0.25 │       vpmulu %ymm2,%ymm5,%ymm2
+  4.69 │       vpaddq %ymm4,%ymm2,%ymm2
+  0.49 │       vpsrlq $0x20,%ymm6,%ymm4
+  3.21 │       vpmulu %ymm3,%ymm4,%ymm4
+  0.49 │       vpsrlq $0x20,%ymm3,%ymm5
+  4.44 │       vpmulu %ymm5,%ymm6,%ymm5
+  4.94 │       vpaddq %ymm4,%ymm5,%ymm4
+  5.68 │       vpsllq $0x20,%ymm4,%ymm4    [jason] Time hotspot
+  0.25 │       vpmulu %ymm3,%ymm6,%ymm3
+  1.48 │       vpaddq %ymm4,%ymm3,%ymm3
+  0.25 │       vpsrlq $0x20,%ymm7,%ymm4
+  2.72 │       vpmulu %ymm0,%ymm4,%ymm4
+  0.25 │       vpsrlq $0x20,%ymm0,%ymm5
+  3.70 │       vpmulu %ymm5,%ymm7,%ymm5
+  2.22 │       vpaddq %ymm4,%ymm5,%ymm4
+  6.91 │       vpsllq $0x20,%ymm4,%ymm4    [jason] Time hotspot
+  0.25 │       vpmulu %ymm0,%ymm7,%ymm0
+  3.21 │       vpaddq %ymm4,%ymm0,%ymm0
+  1.73 │       vmovdq %ymm1,0x20(%rsp,%rax,8)
+       │       vmovdq %ymm2,0x40(%rsp,%rax,8)
+       │       vmovdq %ymm3,0x60(%rsp,%rax,8)
+  4.44 │       vmovdq %ymm0,0x80(%rsp,%rax,8)
+       │       add    $0x10,%rax
+       │       cmp    $0x400,%rax
+       │     ↑ jne    80
+
+For operator + and uint64_t
+
+(base) ➜ /home/jiaosong/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3  on git:master x>perf record ./loop
+WARNING: Kernel address maps (/proc/{kallsyms,modules}) are restricted,
+check /proc/sys/kernel/kptr_restrict.
+
+Samples in kernel functions may not be resolved if a suitable vmlinux
+file is not found in the buildid cache or in the vmlinux path.
+
+Samples in kernel modules won't be resolved at all.
+
+If some relocation was applied (e.g. kexec) symbols may be misresolved
+even with a suitable vmlinux or kallsyms file.
+
+Cannot read kernel map
+Couldn't record kernel reference relocation symbol
+Symbol resolution may be skewed if relocation was used (e.g. kexec).
+Check /proc/kallsyms permission or run as root.
+Elapsed execution time: 0.059994 sec; N: 1024, I: 100000, __OP__: +, __TYPE__: uint64_t
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.011 MB perf.data (254 samples) ]
+(base) ➜ /home/jiaosong/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3  on git:master x>
+(base) ➜ /home/jiaosong/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3  on git:master x>perf report
+main  /home/jiaosong/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3/loop
+       │     → callq  memset@plt
+       │       lea    0x20(%rsp),%rdi
+       │       mov    $0x2000,%edx
+       │       xor    %esi,%esi
+       │     → callq  memset@plt
+       │       lea    0x10(%rsp),%rsi
+       │       mov    $0x1,%edi
+       │     → callq  clock_gettime@plt
+       │       mov    0x10(%rsp),%r15
+       │       mov    0x18(%rsp),%r14
+       │       nop
+       │ 70:   xor    %eax,%eax
+       │       nop
+       │       nop
+  0.83 │ 80:   vmovdq 0x2020(%rsp,%rax,8),%ymm0
+ 15.42 │       vmovdq 0x2040(%rsp,%rax,8),%ymm1
+  1.25 │       vmovdq 0x2060(%rsp,%rax,8),%ymm2
+  8.33 │       vmovdq 0x2080(%rsp,%rax,8),%ymm3
+  3.75 │       vpaddq 0x4020(%rsp,%rax,8),%ymm0,%ymm0
+ 32.92 │       vpaddq 0x4040(%rsp,%rax,8),%ymm1,%ymm1  [jason] Time hotspot 
+  4.17 │       vpaddq 0x4060(%rsp,%rax,8),%ymm2,%ymm2
+ 13.75 │       vpaddq 0x4080(%rsp,%rax,8),%ymm3,%ymm3
+       │       vmovdq %ymm0,0x20(%rsp,%rax,8)
+  9.58 │       vmovdq %ymm1,0x40(%rsp,%rax,8)
+  1.25 │       vmovdq %ymm2,0x60(%rsp,%rax,8)
+  4.58 │       vmovdq %ymm3,0x80(%rsp,%rax,8)
+  0.83 │       add    $0x10,%rax
+  0.42 │       cmp    $0x400,%rax
+  2.92 │     ↑ jne    80
+       │       add    $0x1,%ebx
+       │       cmp    $0x186a0,%ebx
+       │     ↑ jne    70
+
+[writeup-12]
+Write-up 12: Get rid of the #define N 1024 macro and redefine N as: int N = atoi(argv[1]);
+(at the beginning of main()). (Setting N through the command line ensures that the compiler
+will make no assumptions about it.) Rerun (with various choices of N) and compare the
+AVX2 vectorized, non-AVX2 vectorized, and unvectorized codes. Does the speedup change
+dramatically relative to the N = 1024 case? Why? 
+[jason]
+Interesting result, when the input len is 1025, the performance is better than 1024 instead of degrade dramasticlly.
+
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make && ./loop 1025
+make: Nothing to be done for 'all'.
+Elapsed execution time: 0.100305 sec; N: 1025, I: 100000, __OP__: *, __TYPE__: uint64_t
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3#
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3#
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make VECTORIZE=1 && ./loop 1025
+clang-10 -Wall -std=gnu99 -O3 -DNDEBUG -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -ffast-math  -c loop.c
+loop.c:73:9: remark: the cost-model indicates that vectorization is not beneficial [-Rpass-missed=loop-vectorize]
+        for (j = 0; j < N; j++) {
+        ^
+loop.c:73:9: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-missed=loop-vectorize]
+clang-10 -o loop loop.o -lrt
+Elapsed execution time: 0.083954 sec; N: 1025, I: 100000, __OP__: *, __TYPE__: uint64_t
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3#
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make && ./loop ^C
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make VECTORIZE=1 AVX2=1 && ./loop 1025
+clang-10 -Wall -std=gnu99 -O3 -DNDEBUG -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -ffast-math -mavx2  -c loop.c
+loop.c:73:9: remark: vectorized loop (vectorization width: 4, interleaved count: 4) [-Rpass=loop-vectorize]
+        for (j = 0; j < N; j++) {
+        ^
+clang-10 -o loop loop.o -lrt
+Elapsed execution time: 0.076888 sec; N: 1025, I: 100000, __OP__: *, __TYPE__: uint64_t
+
+It could be observed that threre is termination-related assemble to handle the final loop with non-vectorization instruction
+.LBB0_7:                                # %for.body14.us
+                                        #   Parent Loop BB0_4 Depth=1
+                                        # =>  This Inner Loop Header: Depth=2
+	#DEBUG_VALUE: main:i <- $edx
+	#DEBUG_VALUE: main:time1 <- [DW_OP_constu 80, DW_OP_minus, DW_OP_LLVM_fragment 64 64] [$rbp+0]
+	#DEBUG_VALUE: main:time1 <- [DW_OP_LLVM_fragment 0 64] $r13
+	#DEBUG_VALUE: main:N <- [DW_OP_constu 56, DW_OP_minus] [$rbp+0]
+	#DEBUG_VALUE: main:total <- 0
+	#DEBUG_VALUE: main:seed <- 0
+	#DEBUG_VALUE: main:C <- [$r15+0]
+	#DEBUG_VALUE: main:B <- [$rbx+0]
+	#DEBUG_VALUE: main:A <- [$r12+0]
+	#DEBUG_VALUE: main:__vla_expr0 <- $r14
+	#DEBUG_VALUE: main:__vla_expr1 <- $r14
+	#DEBUG_VALUE: main:__vla_expr2 <- $r14
+	#DEBUG_VALUE: main:j <- $rsi
+	.loc	5 74 32 is_stmt 1       # loop.c:74:32  [jason] start to process the termination loop
+	movq	(%rbx,%rsi,8), %rdi
+	.loc	5 74 25 is_stmt 0       # loop.c:74:25
+	imulq	(%r12,%rsi,8), %rdi
+	.loc	5 74 18                 # loop.c:74:18
+	movq	%rdi, (%r15,%rsi,8)
+.Ltmp34:
+	.loc	5 73 29 is_stmt 1       # loop.c:73:29
+	addq	$1, %rsi
+.Ltmp35:
+	#DEBUG_VALUE: main:j <- $rsi
+	.loc	5 73 23 is_stmt 0       # loop.c:73:23
+	cmpq	%rsi, %r14
+.Ltmp36:
+	.loc	5 73 9                  # loop.c:73:9
+	jne	.LBB0_7   [jason] LBB0_7 is the loop of the termination
+	jmp	.LBB0_8   [jason] LBB0_8 is the outter loop
+
+[writeup-13]
+Write-up 13: Set __TYPE__ to uint32_t and __OP__ to +, and change your inner loop to be
+strided. Does clang vectorize the code? Why might it choose not to vectorize the code? 
+[jason] No vectorization code. I guess it's due to the non-continuous of the  memory access.
+
+[writeup-14]
+Write-up 14: Use the #vectorize pragma described in the clang language extensions
+webpage above to make clang vectorize the strided loop. What is the speedup over
+non-vectorized code for non-AVX2 and AVX2 vectorization? What happens if you change
+the vectorize_width to 2? Play around with the clang loop pragmas and report the best you
+found (that vectorizes the loop). Did you get a speedup over the non-vectorized code? ]
+[jason] No sppedup for the following code.
+    for (i = 0; i < I; i++)
+    {
+    #pragma clang loop vectorize_width(2)
+        for (j = 0; j < N; j+=2) {
+            C[j] = A[j] __OP__ B[j];
+        }
+    }
+
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make VECTORIZE=1 ASSEMBLE=1 AVX2=1 && ./loop
+clang-10 -Wall -std=gnu99 -g  -O3 -DNDEBUG -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -ffast-math -S -mavx2  -c loop.c
+loop.c:75:9: remark: vectorized loop (vectorization width: 2, interleaved count: 1) [-Rpass=loop-vectorize]
+        for (j = 0; j < N; j+=2) {
+        ^
+Elapsed execution time: 0.056544 sec; N: 1024, I: 100000, __OP__: +, __TYPE__: uint32_t
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3#
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3#
+root@2546cabee09b:/workspace/src/github/joeshow79/pess/MIT6_172F18_hw3/homework3# make VECTORIZE=1 ASSEMBLE=1 AVX2=1 && ./loop
+clang-10 -Wall -std=gnu99 -g  -O3 -DNDEBUG -Rpass=loop-vectorize -Rpass-missed=loop-vectorize -ffast-math -S -mavx2  -c loop.c
+loop.c:75:9: remark: the cost-model indicates that vectorization is not beneficial [-Rpass-missed=loop-vectorize]
+        for (j = 0; j < N; j+=2) {
+        ^
+loop.c:75:9: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-missed=loop-vectorize]
+Elapsed execution time: 0.056362 sec; N: 1024, I: 100000, __OP__: +, __TYPE__: uint32_t
+
+[writeup-15]
+Write-up 15: This code vectorizes, but how does it vectorize? Turn on ASSEMBLE=1, look at
+the assembly dump, and explain what the compiler is doing. 
+[jason] Use ymm0~ymm1 to do vpaddd for vecterization parallel, after the loop done, addup all the value in ymm0~ymm3 by double word type(uint32_t in this case).

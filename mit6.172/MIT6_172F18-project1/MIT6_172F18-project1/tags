@@ -1,0 +1,247 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ANSI_COLOR_BLUE	everybit/tests.c	38;"	d	file:
+ANSI_COLOR_CYAN	everybit/tests.c	40;"	d	file:
+ANSI_COLOR_GREEN	everybit/tests.c	36;"	d	file:
+ANSI_COLOR_MAGENTA	everybit/tests.c	39;"	d	file:
+ANSI_COLOR_RED	everybit/tests.c	35;"	d	file:
+ANSI_COLOR_RESET	everybit/tests.c	41;"	d	file:
+ANSI_COLOR_YELLOW	everybit/tests.c	37;"	d	file:
+BITARRAY_H	everybit/bitarray.h	24;"	d
+BOLD	everybit/clint.py	/^  BOLD = "\\033[1m"$/;"	v	class:bcolors
+BaseName	everybit/clint.py	/^  def BaseName(self):$/;"	m	class:FileInfo
+BaseNameWithExt	everybit/clint.py	/^  def BaseNameWithExt(self):$/;"	m	class:FileInfo
+Begin	everybit/clint.py	/^  def Begin(self, function_name):$/;"	m	class:_FunctionState
+CC	everybit/Makefile	/^CC = clang$/;"	m
+CFLAGS	everybit/Makefile	/^CFLAGS = -std=c99 -Wall -m64 -g$/;"	m
+CanonicalizeAlphabeticalOrder	everybit/clint.py	/^  def CanonicalizeAlphabeticalOrder(self, header_path):$/;"	m	class:_IncludeState
+Check	everybit/clint.py	/^  def Check(self, error, filename, linenum):$/;"	m	class:_FunctionState
+CheckBraces	everybit/clint.py	/^def CheckBraces(filename, clean_lines, linenum, error):$/;"	f
+CheckCStyleCast	everybit/clint.py	/^def CheckCStyleCast(filename, linenum, line, raw_line, cast_type, pattern,$/;"	f
+CheckCheck	everybit/clint.py	/^def CheckCheck(filename, clean_lines, linenum, error):$/;"	f
+CheckComment	everybit/clint.py	/^def CheckComment(comment, filename, linenum, error):$/;"	f
+CheckFinished	everybit/clint.py	/^  def CheckFinished(self, filename, error):$/;"	m	class:_ClassState
+CheckForCopyright	everybit/clint.py	/^def CheckForCopyright(filename, lines, error):$/;"	f
+CheckForFunctionLengths	everybit/clint.py	/^def CheckForFunctionLengths(filename, clean_lines, linenum,$/;"	f
+CheckForHeaderGuard	everybit/clint.py	/^def CheckForHeaderGuard(filename, lines, error):$/;"	f
+CheckForIncludeWhatYouUse	everybit/clint.py	/^def CheckForIncludeWhatYouUse(filename, clean_lines, include_state, error,$/;"	f
+CheckForMultilineCommentsAndStrings	everybit/clint.py	/^def CheckForMultilineCommentsAndStrings(filename, clean_lines, linenum, error):$/;"	f
+CheckForNewlineAtEOF	everybit/clint.py	/^def CheckForNewlineAtEOF(filename, lines, error):$/;"	f
+CheckForNonStandardConstructs	everybit/clint.py	/^def CheckForNonStandardConstructs(filename, clean_lines, linenum,$/;"	f
+CheckForUnicodeReplacementCharacters	everybit/clint.py	/^def CheckForUnicodeReplacementCharacters(filename, lines, error):$/;"	f
+CheckIncludeLine	everybit/clint.py	/^def CheckIncludeLine(filename, clean_lines, linenum, include_state, error):$/;"	f
+CheckInvalidIncrement	everybit/clint.py	/^def CheckInvalidIncrement(filename, clean_lines, linenum, error):$/;"	f
+CheckLanguage	everybit/clint.py	/^def CheckLanguage(filename, clean_lines, linenum, file_extension, include_state,$/;"	f
+CheckMakePairUsesDeduction	everybit/clint.py	/^def CheckMakePairUsesDeduction(filename, clean_lines, linenum, error):$/;"	f
+CheckNextIncludeOrder	everybit/clint.py	/^  def CheckNextIncludeOrder(self, header_type):$/;"	m	class:_IncludeState
+CheckPosixThreading	everybit/clint.py	/^def CheckPosixThreading(filename, clean_lines, linenum, error):$/;"	f
+CheckSectionSpacing	everybit/clint.py	/^def CheckSectionSpacing(filename, clean_lines, class_info, linenum, error):$/;"	f
+CheckSpacing	everybit/clint.py	/^def CheckSpacing(filename, clean_lines, linenum, error):$/;"	f
+CheckSpacingForFunctionCall	everybit/clint.py	/^def CheckSpacingForFunctionCall(filename, line, linenum, error):$/;"	f
+CheckStyle	everybit/clint.py	/^def CheckStyle(filename, clean_lines, linenum, file_extension, class_state,$/;"	f
+CleanseComments	everybit/clint.py	/^def CleanseComments(line):$/;"	f
+CleansedLines	everybit/clint.py	/^class CleansedLines(object):$/;"	c
+CloseExpression	everybit/clint.py	/^def CloseExpression(clean_lines, linenum, pos):$/;"	f
+Count	everybit/clint.py	/^  def Count(self):$/;"	m	class:_FunctionState
+END	test.py	/^END = '\\033[0m'$/;"	v
+ENDC	everybit/clint.py	/^  ENDC = '\\033[0m'$/;"	v	class:bcolors
+End	everybit/clint.py	/^  def End(self):$/;"	m	class:_FunctionState
+Error	everybit/clint.py	/^def Error(filename, linenum, category, confidence, message):$/;"	f
+Extension	everybit/clint.py	/^  def Extension(self):$/;"	m	class:FileInfo
+FAIL	everybit/clint.py	/^  FAIL = '\\033[91m'$/;"	v	class:bcolors
+FIB_SIZE	everybit/tests.c	/^const int FIB_SIZE = 53;$/;"	v
+FileInfo	everybit/clint.py	/^class FileInfo:$/;"	c
+FilesBelongToSameModule	everybit/clint.py	/^def FilesBelongToSameModule(filename_cc, filename_h):$/;"	f
+FindNextMultiLineCommentEnd	everybit/clint.py	/^def FindNextMultiLineCommentEnd(lines, lineix):$/;"	f
+FindNextMultiLineCommentStart	everybit/clint.py	/^def FindNextMultiLineCommentStart(lines, lineix):$/;"	f
+FullName	everybit/clint.py	/^  def FullName(self):$/;"	m	class:FileInfo
+GREEN	test.py	/^GREEN = '\\033[92;1m'$/;"	v
+GetHeaderGuardCPPVariable	everybit/clint.py	/^def GetHeaderGuardCPPVariable(filename):$/;"	f
+GetHeaderGuardCPPVariableShort	everybit/clint.py	/^def GetHeaderGuardCPPVariableShort(filename):$/;"	f
+GetLineWidth	everybit/clint.py	/^def GetLineWidth(line):$/;"	f
+GetPreviousNonBlankLine	everybit/clint.py	/^def GetPreviousNonBlankLine(clean_lines, linenum):$/;"	f
+HEADER	everybit/clint.py	/^  HEADER = '\\033[95m'$/;"	v	class:bcolors
+HEADERS	everybit/Makefile	/^HEADERS = $(wildcard *.h)$/;"	m
+IncrementErrorCount	everybit/clint.py	/^  def IncrementErrorCount(self, category):$/;"	m	class:_CppLintState
+IsBlankLine	everybit/clint.py	/^def IsBlankLine(line):$/;"	f
+IsCppString	everybit/clint.py	/^def IsCppString(line):$/;"	f
+IsErrorSuppressedByNolint	everybit/clint.py	/^def IsErrorSuppressedByNolint(category, linenum):$/;"	f
+IsInAlphabeticalOrder	everybit/clint.py	/^  def IsInAlphabeticalOrder(self, header_path):$/;"	m	class:_IncludeState
+IsSource	everybit/clint.py	/^  def IsSource(self):$/;"	m	class:FileInfo
+KTIMING_CLOCK_ID	everybit/ktiming.c	59;"	d	file:
+KTIMING_CLOCK_ID	everybit/ktiming.c	62;"	d	file:
+LDFLAGS	everybit/Makefile	/^LDFLAGS = -flto -fuse-ld=gold $/;"	m
+Match	everybit/clint.py	/^def Match(pattern, s):$/;"	f
+NEXT_ARG_LONG	everybit/tests.c	135;"	d	file:
+NoExtension	everybit/clint.py	/^  def NoExtension(self):$/;"	m	class:FileInfo
+NumLines	everybit/clint.py	/^  def NumLines(self):$/;"	m	class:CleansedLines
+OBJECTS	everybit/Makefile	/^OBJECTS = $(patsubst %.c,%.o,$(SOURCES))$/;"	m
+OKBLUE	everybit/clint.py	/^  OKBLUE = '\\033[94m'$/;"	v	class:bcolors
+OKGREEN	everybit/clint.py	/^  OKGREEN = '\\033[92m'$/;"	v	class:bcolors
+OLD_MODE	everybit/Makefile	/^OLD_MODE = $(shell cat .buildmode 2> \/dev\/null)$/;"	m
+PLATFORM	everybit/Makefile	/^PLATFORM = $(shell uname)$/;"	m
+PRODUCT	everybit/Makefile	/^PRODUCT = everybit$/;"	m
+ParseArguments	everybit/clint.py	/^def ParseArguments(args):$/;"	f
+ParseNolintSuppressions	everybit/clint.py	/^def ParseNolintSuppressions(filename, raw_line, linenum, error):$/;"	f
+PrintCategories	everybit/clint.py	/^def PrintCategories():$/;"	f
+PrintErrorCounts	everybit/clint.py	/^  def PrintErrorCounts(self):$/;"	m	class:_CppLintState
+PrintUsage	everybit/clint.py	/^def PrintUsage(message):$/;"	f
+ProcessFile	everybit/clint.py	/^def ProcessFile(filename, vlevel, extra_check_functions=[]):$/;"	f
+ProcessFileData	everybit/clint.py	/^def ProcessFileData(filename, file_extension, lines, error,$/;"	f
+ProcessLine	everybit/clint.py	/^def ProcessLine(filename, file_extension,$/;"	f
+QUIET	test.py	/^QUIET = False$/;"	v
+RED	test.py	/^RED = '\\033[91;1m'$/;"	v
+RemoveMultiLineComments	everybit/clint.py	/^def RemoveMultiLineComments(filename, lines, error):$/;"	f
+RemoveMultiLineCommentsFromRange	everybit/clint.py	/^def RemoveMultiLineCommentsFromRange(lines, begin, end):$/;"	f
+ReplaceableCheck	everybit/clint.py	/^def ReplaceableCheck(operator, macro, line):$/;"	f
+RepositoryName	everybit/clint.py	/^  def RepositoryName(self):$/;"	m	class:FileInfo
+ResetErrorCounts	everybit/clint.py	/^  def ResetErrorCounts(self):$/;"	m	class:_CppLintState
+ResetNolintSuppressions	everybit/clint.py	/^def ResetNolintSuppressions():$/;"	f
+SOURCES	everybit/Makefile	/^SOURCES = $(wildcard *.c)$/;"	m
+Search	everybit/clint.py	/^def Search(pattern, s):$/;"	f
+SetCountingStyle	everybit/clint.py	/^  def SetCountingStyle(self, counting_style):$/;"	m	class:_CppLintState
+SetFilters	everybit/clint.py	/^  def SetFilters(self, filters):$/;"	m	class:_CppLintState
+SetOutputFormat	everybit/clint.py	/^  def SetOutputFormat(self, output_format):$/;"	m	class:_CppLintState
+SetVerboseLevel	everybit/clint.py	/^  def SetVerboseLevel(self, level):$/;"	m	class:_CppLintState
+Split	everybit/clint.py	/^  def Split(self):$/;"	m	class:FileInfo
+TESTS_H	everybit/tests.h	24;"	d
+TEST_FAIL	everybit/tests.c	113;"	d	file:
+TEST_FAIL_WITH_NAME	everybit/tests.c	120;"	d	file:
+TEST_PASS	everybit/tests.c	103;"	d	file:
+TEST_PASS_WITH_NAME	everybit/tests.c	106;"	d	file:
+UpdateIncludeState	everybit/clint.py	/^def UpdateIncludeState(filename, include_state, io=codecs):$/;"	f
+WARNING	everybit/clint.py	/^  WARNING = '\\033[93m'$/;"	v	class:bcolors
+_CHECK_MACROS	everybit/clint.py	/^_CHECK_MACROS = [$/;"	v
+_CHECK_REPLACEMENT	everybit/clint.py	/^_CHECK_REPLACEMENT = dict([(m, {}) for m in _CHECK_MACROS])$/;"	v
+_CPP_HEADERS	everybit/clint.py	/^_CPP_HEADERS = frozenset([$/;"	v
+_CPP_SECTION	everybit/clint.py	/^  _CPP_SECTION = 3$/;"	v	class:_IncludeState
+_CPP_SYS_HEADER	everybit/clint.py	/^_CPP_SYS_HEADER = 2$/;"	v
+_C_SECTION	everybit/clint.py	/^  _C_SECTION = 2$/;"	v	class:_IncludeState
+_C_SYS_HEADER	everybit/clint.py	/^_C_SYS_HEADER = 1$/;"	v
+_ClassInfo	everybit/clint.py	/^class _ClassInfo(object):$/;"	c
+_ClassState	everybit/clint.py	/^class _ClassState(object):$/;"	c
+_ClassifyInclude	everybit/clint.py	/^def _ClassifyInclude(fileinfo, include, is_system):$/;"	f
+_CollapseStrings	everybit/clint.py	/^  def _CollapseStrings(elided):$/;"	m	class:CleansedLines
+_CppLintState	everybit/clint.py	/^class _CppLintState(object):$/;"	c
+_DEFAULT_FILTERS	everybit/clint.py	/^_DEFAULT_FILTERS = ['-build\/include_alpha']$/;"	v
+_DropCommonSuffixes	everybit/clint.py	/^def _DropCommonSuffixes(filename):$/;"	f
+_ERROR_CATEGORIES	everybit/clint.py	/^_ERROR_CATEGORIES = [$/;"	v
+_Filters	everybit/clint.py	/^def _Filters():$/;"	f
+_FunctionState	everybit/clint.py	/^class _FunctionState(object):$/;"	c
+_GNU_SOURCE	everybit/tests.c	22;"	d	file:
+_GetTextInside	everybit/clint.py	/^def _GetTextInside(text, start_pattern):$/;"	f
+_HEADERS_CONTAINING_TEMPLATES	everybit/clint.py	/^_HEADERS_CONTAINING_TEMPLATES = ($/;"	v
+_INITIAL_SECTION	everybit/clint.py	/^  _INITIAL_SECTION = 0$/;"	v	class:_IncludeState
+_IncludeError	everybit/clint.py	/^class _IncludeError(Exception):$/;"	c
+_IncludeState	everybit/clint.py	/^class _IncludeState(dict):$/;"	c
+_IsTestFilename	everybit/clint.py	/^def _IsTestFilename(filename):$/;"	f
+_KTIMING_H_	everybit/ktiming.h	36;"	d
+_LIKELY_MY_HEADER	everybit/clint.py	/^_LIKELY_MY_HEADER = 3$/;"	v
+_MY_H_SECTION	everybit/clint.py	/^  _MY_H_SECTION = 1$/;"	v	class:_IncludeState
+_NORMAL_TRIGGER	everybit/clint.py	/^  _NORMAL_TRIGGER = 250  # for --v=0, 500 for --v=1, etc.$/;"	v	class:_FunctionState
+_OTHER_HEADER	everybit/clint.py	/^_OTHER_HEADER = 5$/;"	v
+_OTHER_H_SECTION	everybit/clint.py	/^  _OTHER_H_SECTION = 4$/;"	v	class:_IncludeState
+_OutputFormat	everybit/clint.py	/^def _OutputFormat():$/;"	f
+_POSIX_C_SOURCE	everybit/ktiming.c	38;"	d	file:
+_POSIX_C_SOURCE	everybit/main.c	27;"	d	file:
+_POSSIBLE_MY_HEADER	everybit/clint.py	/^_POSSIBLE_MY_HEADER = 4$/;"	v
+_RE_FIRST_COMPONENT	everybit/clint.py	/^_RE_FIRST_COMPONENT = re.compile(r'^[^-_.]+')$/;"	v
+_RE_PATTERN_CLEANSE_LINE_C_COMMENTS	everybit/clint.py	/^_RE_PATTERN_CLEANSE_LINE_C_COMMENTS = re.compile($/;"	v
+_RE_PATTERN_CLEANSE_LINE_DOUBLE_QUOTES	everybit/clint.py	/^_RE_PATTERN_CLEANSE_LINE_DOUBLE_QUOTES = re.compile(r'"[^"]*"')$/;"	v
+_RE_PATTERN_CLEANSE_LINE_ESCAPES	everybit/clint.py	/^_RE_PATTERN_CLEANSE_LINE_ESCAPES = re.compile($/;"	v
+_RE_PATTERN_CLEANSE_LINE_SINGLE_QUOTES	everybit/clint.py	/^_RE_PATTERN_CLEANSE_LINE_SINGLE_QUOTES = re.compile(r"'.'")$/;"	v
+_RE_PATTERN_EXPLICIT_MAKEPAIR	everybit/clint.py	/^_RE_PATTERN_EXPLICIT_MAKEPAIR = re.compile(r'\\bmake_pair\\s*<')$/;"	v
+_RE_PATTERN_INCLUDE	everybit/clint.py	/^_RE_PATTERN_INCLUDE = re.compile(r'^\\s*#\\s*include\\s*([<"])([^>"]*)[>"].*$')$/;"	v
+_RE_PATTERN_INCLUDE_NEW_STYLE	everybit/clint.py	/^_RE_PATTERN_INCLUDE_NEW_STYLE = re.compile(r'#include +"[^\/]+\\.h"')$/;"	v
+_RE_PATTERN_INVALID_INCREMENT	everybit/clint.py	/^_RE_PATTERN_INVALID_INCREMENT = re.compile($/;"	v
+_RE_PATTERN_STRING	everybit/clint.py	/^_RE_PATTERN_STRING = re.compile(r'\\bstring\\b')$/;"	v
+_RE_PATTERN_TODO	everybit/clint.py	/^_RE_PATTERN_TODO = re.compile(r'^\/\/(\\s*)TODO(\\(.+?\\))?:?(\\s|$)?')$/;"	v
+_RE_SUPPRESSION	everybit/clint.py	/^_RE_SUPPRESSION = re.compile(r'\\bNOLINT\\b(\\([^)]*\\))?')$/;"	v
+_SECTION_NAMES	everybit/clint.py	/^  _SECTION_NAMES = {$/;"	v	class:_IncludeState
+_STL_HEADERS	everybit/clint.py	/^_STL_HEADERS = frozenset([$/;"	v
+_SetCountingStyle	everybit/clint.py	/^def _SetCountingStyle(level):$/;"	f
+_SetFilters	everybit/clint.py	/^def _SetFilters(filters):$/;"	f
+_SetOutputFormat	everybit/clint.py	/^def _SetOutputFormat(output_format):$/;"	f
+_SetVerboseLevel	everybit/clint.py	/^def _SetVerboseLevel(level):$/;"	f
+_ShouldPrintError	everybit/clint.py	/^def _ShouldPrintError(category, confidence, linenum):$/;"	f
+_TEST_TRIGGER	everybit/clint.py	/^  _TEST_TRIGGER = 400    # about 50% more than _NORMAL_TRIGGER.$/;"	v	class:_FunctionState
+_TYPE_NAMES	everybit/clint.py	/^  _TYPE_NAMES = {$/;"	v	class:_IncludeState
+_VerboseLevel	everybit/clint.py	/^def _VerboseLevel():$/;"	f
+__author__	test.py	/^__author__ = 'Reid Kleckner <rnk@mit.edu>'$/;"	v
+__init__	everybit/clint.py	/^  def __init__(self):$/;"	m	class:_ClassState
+__init__	everybit/clint.py	/^  def __init__(self):$/;"	m	class:_CppLintState
+__init__	everybit/clint.py	/^  def __init__(self):$/;"	m	class:_FunctionState
+__init__	everybit/clint.py	/^  def __init__(self):$/;"	m	class:_IncludeState
+__init__	everybit/clint.py	/^  def __init__(self, filename):$/;"	m	class:FileInfo
+__init__	everybit/clint.py	/^  def __init__(self, lines):$/;"	m	class:CleansedLines
+__init__	everybit/clint.py	/^  def __init__(self, name, clean_lines, linenum):$/;"	m	class:_ClassInfo
+_cpplint_state	everybit/clint.py	/^_cpplint_state = _CppLintState()$/;"	v
+_error_suppressions	everybit/clint.py	/^_error_suppressions = {}$/;"	v
+_re_pattern_algorithm_header	everybit/clint.py	/^_re_pattern_algorithm_header = []$/;"	v
+_re_pattern_templates	everybit/clint.py	/^_re_pattern_templates = []$/;"	v
+_regexp_compile_cache	everybit/clint.py	/^_regexp_compile_cache = {}$/;"	v
+bcolors	everybit/clint.py	/^class bcolors:$/;"	c
+bit_sz	everybit/bitarray.c	/^  size_t bit_sz;$/;"	m	struct:bitarray	file:
+bitarray	everybit/bitarray.c	/^struct bitarray {$/;"	s	file:
+bitarray_fprint	everybit/tests.c	/^static void bitarray_fprint(FILE* const stream,$/;"	f	file:
+bitarray_free	everybit/bitarray.c	/^void bitarray_free(bitarray_t* const bitarray) {$/;"	f
+bitarray_get	everybit/bitarray.c	/^bool bitarray_get(const bitarray_t* const bitarray, const size_t bit_index) {$/;"	f
+bitarray_get_bit_sz	everybit/bitarray.c	/^size_t bitarray_get_bit_sz(const bitarray_t* const bitarray) {$/;"	f
+bitarray_new	everybit/bitarray.c	/^bitarray_t* bitarray_new(const size_t bit_sz) {$/;"	f
+bitarray_randfill	everybit/bitarray.c	/^void bitarray_randfill(bitarray_t* const bitarray){$/;"	f
+bitarray_rotate	everybit/bitarray.c	/^void bitarray_rotate(bitarray_t* const bitarray,$/;"	f
+bitarray_rotate_left	everybit/bitarray.c	/^static void bitarray_rotate_left(bitarray_t* const bitarray,$/;"	f	file:
+bitarray_rotate_left_one	everybit/bitarray.c	/^static void bitarray_rotate_left_one(bitarray_t* const bitarray,$/;"	f	file:
+bitarray_set	everybit/bitarray.c	/^void bitarray_set(bitarray_t* const bitarray,$/;"	f
+bitarray_t	everybit/bitarray.h	/^typedef struct bitarray bitarray_t;$/;"	t	typeref:struct:bitarray
+bitmask	everybit/bitarray.c	/^static char bitmask(const size_t bit_index) {$/;"	f	file:
+boolfromchar	everybit/tests.c	/^static bool boolfromchar(const char c) {$/;"	f	file:
+buf	everybit/bitarray.c	/^  char* buf;$/;"	m	struct:bitarray	file:
+clockmark_t	everybit/ktiming.h	/^typedef uint64_t clockmark_t;$/;"	t
+codecs	everybit/clint.py	/^import codecs$/;"	i
+color	everybit/clint.py	/^  def color(text, color):$/;"	m	class:bcolors
+difflib	test.py	/^import difflib$/;"	i
+fibs	everybit/tests.c	/^const double fibs[FIB_SIZE] = {1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229, 832040, 1346269, 2178309, 3524578, 5702887, 9227465, 14930352, 24157817, 39088169, 63245986, 102334155, 165580141, 267914296, 433494437, 701408733, 1134903170, 1836311903, 2971215073, 4807526976, 7778742049, 12586269025, 20365011074, 32951280099, 53316291173, 86267571272};$/;"	v
+for	everybit/clint.py	/^import math  # for log$/;"	i
+getopt	everybit/clint.py	/^import getopt$/;"	i
+ktiming_diff_sec	everybit/ktiming.c	/^float ktiming_diff_sec(const clockmark_t* const start,$/;"	f
+ktiming_diff_usec	everybit/ktiming.c	/^uint64_t ktiming_diff_usec(const clockmark_t* const start,$/;"	f
+ktiming_getmark	everybit/ktiming.c	/^clockmark_t ktiming_getmark() {$/;"	f
+log	everybit/clint.py	/^import math  # for log$/;"	i
+main	everybit/clint.py	/^def main():$/;"	f
+main	everybit/main.c	/^int main(int argc, char** argv) {$/;"	f
+main	test.py	/^def main(argv):$/;"	f
+math	everybit/clint.py	/^import math  # for log$/;"	i
+modulo	everybit/bitarray.c	/^static size_t modulo(const ssize_t n, const size_t m) {$/;"	f	file:
+next_arg_char	everybit/tests.c	/^char* next_arg_char() {$/;"	f
+os	everybit/clint.py	/^import os$/;"	i
+os	test.py	/^import os$/;"	i
+parse_and_run_tests	everybit/tests.c	/^void parse_and_run_tests(const char* filename, int selected_test) {$/;"	f
+print_result	test.py	/^def print_result(result):$/;"	f
+print_usage	everybit/main.c	/^void print_usage(const char* const argv_0) {$/;"	f
+re	everybit/clint.py	/^import re$/;"	i
+re	test.py	/^import re$/;"	i
+sre_compile	everybit/clint.py	/^import sre_compile$/;"	i
+string	everybit/clint.py	/^import string$/;"	i
+subprocess	test.py	/^import subprocess$/;"	i
+sys	everybit/clint.py	/^import sys$/;"	i
+sys	test.py	/^import sys$/;"	i
+test_bitarray	everybit/tests.c	/^static bitarray_t* test_bitarray = NULL;$/;"	v	file:
+test_project1	test.py	/^def test_project1(binary):$/;"	f
+test_verbose	everybit/tests.c	/^static bool test_verbose = false;$/;"	v	file:
+testutil_expect	everybit/tests.c	131;"	d	file:
+testutil_expect_internal	everybit/tests.c	/^static void testutil_expect_internal(const char* bitstring,$/;"	f	file:
+testutil_frmstr	everybit/tests.c	/^void testutil_frmstr(const char* const bitstring) {$/;"	f
+testutil_newrand	everybit/tests.c	/^static void testutil_newrand(const size_t bit_sz, const unsigned int seed) {$/;"	f	file:
+testutil_require_valid_input	everybit/tests.c	/^void testutil_require_valid_input(const size_t bit_offset,$/;"	f
+testutil_rotate	everybit/tests.c	/^void testutil_rotate(const size_t bit_offset,$/;"	f
+threading_list	everybit/clint.py	/^threading_list = ($/;"	v
+time	test.py	/^import time$/;"	i
+timed_rotation	everybit/tests.c	/^int timed_rotation(const double time_limit_seconds) {$/;"	f
+unicodedata	everybit/clint.py	/^import unicodedata$/;"	i
+wait_for_test_process	test.py	/^def wait_for_test_process(proc, timeout):$/;"	f
+with_statement	test.py	/^from __future__ import with_statement$/;"	i

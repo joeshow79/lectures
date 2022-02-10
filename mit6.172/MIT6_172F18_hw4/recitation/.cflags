@@ -1,0 +1,1 @@
+-Wall -Wextra -Wfloat-equal -Wundef -Wcast-align -Wwrite-strings -Wmissing-declarations -Wredundant-decls -Wshadow -Woverloaded-virtual -g -std=gnu11 -O3 -DNDEBUG -fsanitize=cilk -fcilkplus
