@@ -265,25 +265,8 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-    // Case 1: x < 0, y>=0 (y - x may overflow)
-    // int b = (((((x >> 31) ^ 0) & 0x1)) & ((((y >> 31) ^ 1) & 0x1)));  // b = 1 when x < 0 and y >= 0, b = 0 otherwize
-    int b = ((((x >> 31) ^ 0)  & ((y >> 31) ^ 1)) & 0x1);  // b = 1 when x < 0 and y >= 0, b = 0 otherwize
-
-    // Case 2: y < 0, x>=0 (y - x may overflow)
-    /*int c = ((((y >> 31) ^ 0) & 0x1) & ((((x >> 31) ^ 1) & 0x1)));  // c = 1 when y < 0 and x >= 0, c = 0 otherwize*/
-    // x & y first,  then result & 0x1 to save 1 operator
-    int c = ((((y >> 31) ^ 0)  & ((x >> 31) ^ 1)) & 0x1);  // c = 1 when y < 0 and x >= 0, c = 0 otherwize
-
-    //Case 3: other cases
-    // -x = ~x + 1
-    //  y -x = y + (-x) = y + (~x + 1)
-    int a = (((((y + (~x + 1) ) >> 31) ^ 1) & 0x1)); // a = 1 when (y-x) >= 0
-    /*printf("x=%d, y=%d, b=%d, c=%d, a=%d, t=%d\n", x, y, b, c, a, ((y + (~x + 1) ) >> 31));*/
-
-    // return (b | ((!b) & (!c)) | ((!b) & (c) & a));
-    return (b | ((!b) & (!c) & (a)));
-    /*return (b | ((!b)&(c)) | ((!b)&(!c)&(a)) );*/
-
+    // what about the result of y -x overflowed?
+    return ((y + (~x + 1) ) >> 31) ^ 1; // -x = ~x + 1
 }
 //4
 /*
@@ -326,88 +309,103 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-    // The idea is to shrink the multi leading 1 or 0 to only 1
     int y = (x >> 1);
     int w = (y ^ x); // indicate the adjacent 2 bits are same or not
 
-    // Find the most significant 1 (right to left) of w, which means the ending of the continous of the leading 1 or 0 of x
+    // The idea is to find the most significant 1 (right to left) of w
     // counter count the number of 0 before the first 1 (most significant 1) found
     // the number of the bits (counter indicate) is redundant, can be substract from the original 32 bit
     int counter = 0;
     int b = 1;
-    // skip the checking of the sign bit
+    // skip the sign bit
     /*int b = (!((w>>31) & 0x1));  // b = 0 if bit is set (which will end up with all the following b assignment to 0), b = 1 othersize*/
     /*counter += b;*/
 
-    b = b & (!((w>>30) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
+    int b4 = (w >> 23)
 
-    b = b & (!((w>>29) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>28) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>27) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>26) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>25) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>24) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>23) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>22) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>21) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>20) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-
-    b = b & (!((w>>19) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>18) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>17) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>16) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>15) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>14) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>13) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>12) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>11) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>10) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-
-    b = b & (!((w>>9) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>8) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>7) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>6) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>5) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>4) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>3) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>2) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>1) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!(w & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-
-  return (32 + (~counter + 1));  // 31 - counter + 1(leading sign bit)
+  return (32 - counter);  // 31 - counter + 1(leading sign bit)
 }
+/*int howManyBits(int x) {*/
+    /*int y = (x >> 1);*/
+    /*int w = (y ^ x); // indicate the adjacent 2 bits are same or not*/
 
+    /*// The idea is to find the most significant 1 (right to left) of w*/
+    /*// counter count the number of 0 before the first 1 (most significant 1) found*/
+    /*// the number of the bits (counter indicate) is redundant, can be substract from the original 32 bit*/
+    /*int counter = 0;*/
+    /*int b = 1;*/
+    /*// skip the sign bit*/
+    /*[>int b = (!((w>>31) & 0x1));  // b = 0 if bit is set (which will end up with all the following b assignment to 0), b = 1 othersize<]*/
+    /*[>counter += b;<]*/
+
+    /*b = b & (!((w>>30) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+
+    /*b = b & (!((w>>29) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>28) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>27) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>26) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>25) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>24) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>23) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>22) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>21) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>20) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+
+    /*b = b & (!((w>>19) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>18) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>17) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>16) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>15) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>14) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>13) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>12) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>11) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>10) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+
+    /*b = b & (!((w>>9) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>8) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>7) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>6) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>5) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>4) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>3) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>2) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>1) & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+    /*b = b & (!(w & 0x1));  // b = 0 if bit is set , b = 1 othersize*/
+    /*counter += b;*/
+
+  /*return (32 - counter);  // 31 - counter + 1(leading sign bit)*/
+/*}*/
 //float
 /*
  * floatScale2 - Return bit-level equivalent of expression 2*f for
