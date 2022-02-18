@@ -184,8 +184,8 @@ int isTmax(int x) {
  */
 int allOddBits(int x) {
     /*int allOdd = (x & (0xAA << 24))  + (x & (0xAA << 16)) + (x & (0xAA << 8)) + (x & 0xAA);*/  // this works but extends the limit of the operators
-    int allOdd = x & ((0xAA << 24) | (0xAA << 16) | (0xAA << 8) | (x & 0xAA));
-    int shift1 = allOdd >> 1;
+    int allOdd = x & ((0xAA << 24) | (0xAA << 16) | (0xAA << 8) | (x & 0xAA)); // clear all even bits
+    int shift1 = allOdd >> 1; // propagate odd bit to its lower 1 even bit
     int allBitsSet = ( (allOdd) | (shift1) );  // if all odd bits set, the result should be 0xFFFFFFFF
 
     return (!( ~ allBitsSet ));  // if all odd bits set
@@ -325,89 +325,141 @@ int logicalNeg(int x) {
  *  Max ops: 90
  *  Rating: 4
  */
-int howManyBits(int x) {
-    // The idea is to shrink the multi leading 1 or 0 to only 1
-    int y = (x >> 1);
-    int w = (y ^ x); // indicate the adjacent 2 bits are same or not
+// Method 1
+/*int howManyBits(int x) {*/
+    /*// The idea is to shrink the multi leading bits (1 or 0) to only 1 bit*/
+    /*int y = (x >> 1);*/
+    /*int w = (y ^ x); // indicate the adjacent 2 bits are same or not*/
 
-    // Find the most significant 1 (right to left) of w, which means the ending of the continous of the leading 1 or 0 of x
-    // counter count the number of 0 before the first 1 (most significant 1) found
-    // the number of the bits (counter indicate) is redundant, can be substract from the original 32 bit
-    int counter = 0;
-    int b = 1;
-    // skip the checking of the sign bit
-    /*int b = (!((w>>31) & 0x1));  // b = 0 if bit is set (which will end up with all the following b assignment to 0), b = 1 othersize*/
+    /*// Find the most significant 1 (right to left) of w, which means the ending of the continous of the leading 1 or 0 of x*/
+    /*// counter count the number of 0 before the first 1 (most significant 1) found*/
+    /*// the number of the bits (counter indicate) is redundant, can be substract from the original 32 bit*/
+    /*int counter = 0;*/
+    /*int b = 1;*/
+    /*// skip the checking of the sign bit*/
+    /*[>int b = (!((w>>31) & 0x1));  // b = 0 if bit is set (which will end up with all the following b assignment to 0), b = 1 otherwize<]*/
+    /*[>counter += b;<]*/
+
+    /*b = b & (!((w>>30) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
     /*counter += b;*/
 
-    b = b & (!((w>>30) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
+    /*b = b & (!((w>>29) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>28) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>27) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>26) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>25) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>24) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>23) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>22) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>21) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>20) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
 
-    b = b & (!((w>>29) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>28) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>27) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>26) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>25) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>24) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>23) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>22) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>21) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>20) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
+    /*b = b & (!((w>>19) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>18) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>17) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>16) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>15) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>14) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>13) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>12) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>11) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>10) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
 
-    b = b & (!((w>>19) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>18) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>17) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>16) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>15) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>14) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>13) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>12) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>11) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>10) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
+    /*b = b & (!((w>>9) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>8) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>7) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>6) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>5) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>4) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>3) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>2) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!((w>>1) & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
+    /*b = b & (!(w & 0x1));  // b = 0 if bit is set , b = 1 otherwize*/
+    /*counter += b;*/
 
-    b = b & (!((w>>9) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>8) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>7) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>6) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>5) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>4) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>3) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>2) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!((w>>1) & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
-    b = b & (!(w & 0x1));  // b = 0 if bit is set , b = 1 othersize
-    counter += b;
+  /*return (32 + (~counter + 1));  // 31 - counter + 1(leading sign bit)*/
+/*}*/
 
-  return (32 + (~counter + 1));  // 31 - counter + 1(leading sign bit)
+// Method 2, more compact, but number of operators beyond the limit
+int howManyBits(int x) {
+    // most significant bit
+    int msb = (x>>31);
+    // propagation msg bit to every bit for xor operation
+    int prg = msb | msb << 1;
+    prg = prg | prg << 2;
+    prg = prg | prg << 4;
+    prg = prg | prg << 8;
+    prg = prg | prg << 16;
+
+    int target = x ^ prg;
+    // The idea is to find the first 1(right to left) of the target
+    // The leading 0s before 1 could be shrink to only one
+    // The number of the least bits is 32 - number_of_leading_0 + 1
+
+    int numLeading0 =
+        (!(((x << 1) >> 1) ^ x)) +
+        (!(((x << 2) >> 2) ^ x)) +
+        (!(((x << 3) >> 3) ^ x)) +
+        (!(((x << 4) >> 4) ^ x)) +
+        (!(((x << 5) >> 5) ^ x)) +
+        (!(((x << 6) >> 6) ^ x)) +
+        (!(((x << 7) >> 7) ^ x)) +
+        (!(((x << 8) >> 8) ^ x)) +
+        (!(((x << 9) >> 9) ^ x)) +
+        (!(((x << 10) >> 10) ^ x)) +
+        (!(((x << 11) >> 11) ^ x)) +
+        (!(((x << 12) >> 12) ^ x)) +
+        (!(((x << 13) >> 13) ^ x)) +
+        (!(((x << 14) >> 14) ^ x)) +
+        (!(((x << 15) >> 15) ^ x)) +
+        (!(((x << 16) >> 16) ^ x)) +
+        (!(((x << 17) >> 17) ^ x)) +
+        (!(((x << 18) >> 18) ^ x)) +
+        (!(((x << 19) >> 19) ^ x)) +
+        (!(((x << 20) >> 20) ^ x)) +
+        (!(((x << 21) >> 21) ^ x)) +
+        (!(((x << 22) >> 22) ^ x)) +
+        (!(((x << 23) >> 23) ^ x)) +
+        (!(((x << 24) >> 24) ^ x)) +
+        (!(((x << 25) >> 25) ^ x)) +
+        (!(((x << 26) >> 26) ^ x)) +
+        (!(((x << 27) >> 27) ^ x)) +
+        (!(((x << 28) >> 28) ^ x)) +
+        (!(((x << 29) >> 29) ^ x)) +
+        (!(((x << 30) >> 30) ^ x)) +
+        (!(((x << 31) >> 31) ^ x)) ;
+
+    return (32 + (~numLeading0 + 1));
 }
-
 //float
 /*
  * floatScale2 - Return bit-level equivalent of expression 2*f for
@@ -421,7 +473,51 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  return 2;
+    int E1 = !(((uf >> 23) ^ 0xFF) & 0xFF);  // E1=1 if Exp=0xFF only, E1=0 otherwize
+    int M1 = !!((uf | (uf >> 8) | ((uf >> 16) & 0x7F))  & 0xFF); // M1=1 if mantissa != 000...0
+
+    // Case1: NaN, Exp = 0xFF, Mantissa != 000...0
+    if ( E1 && M1 ) {
+        return uf;
+    }
+
+    int mantissa = (uf & 0x7FFFFF);
+
+    int sign = (uf>>31);
+    // scale 2 means keep the mantissa not change but increase the exp by 1
+    // need to check if exp overflow(oxFF) happen after scaling, if yes, set frac to 000...0(infinity)
+    int exp = (uf >> 23) & 0xFF;
+
+    if (exp == 0) {
+        // Case2: Denormalized value
+        if (mantissa & 0x400000) {
+            // Test the most significant bit of the Mantissa
+            // (if 1 then need to transform  to Normalized format after scaling)
+            exp = 1;
+        }
+        mantissa = (mantissa << 1) ; // scaling by 2, includeing the case the argument is 0
+        mantissa = mantissa & 0x7FFFFF; // clear carry bit if there is (omit by Normalized format)
+    } else {
+        // Case3: Normalized value
+
+        // Case3-1: overflow before or after scale
+        // Two cases should set the value to infinity when
+        // exp = 0xFF
+        // exp = 0xFE: will overflow after scale by 2
+        if ((exp & 0xFE) == 0xFE) {
+            // infinity's representation
+            exp = 0xFF;
+            mantissa = 0;
+        } else {
+            exp += 1; // scale by 2
+        }
+    }
+
+    int ret = (sign << 31) + (exp << 23) + mantissa;
+
+    /*printf("argument=%d, sign:%d, exp=%d, mantissa=%d, ret=%d\n", uf, sign, exp, mantissa, ret);*/
+
+    return ret;
 }
 /*
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
@@ -436,7 +532,58 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  return 2;
+    int E1 = !(((uf >> 23) ^ 0xFF) & 0xFF);  // E1=1 if Exp=0xFF only, E1=0 otherwize
+
+    // Case 1: NaN or infinity
+    if (E1) {
+        return 0x80000000u;
+    }
+
+    int mantissa = (uf & 0x7FFFFF);
+    int sign = ((uf>>31) & 0x1)? -1:1;
+    int exp = (uf >> 23) & 0xFF;
+
+    if (exp == 0) {
+        /*printf("exp==0\n");*/
+        // Case2: Denormalized value
+        return 0;
+
+    } else {
+        /*printf("exp==0\n");*/
+        // Case3: Normalized value
+        // Handle difference cases per  E to [-126, -2], [-1], [0, 31], [32, 127]
+        // Accordint to E = Exp - Bias(2^(k-1) -1)
+        // That means per Exp to [-1, 125], [126] , [127, 158], [159, 254]
+        if (exp > 125) {
+            // the value represented by uf should be larger than 1.0 x 2^(-1)
+            /*printf("exp>125\n");*/
+            if ( exp > 158) {
+                // overflow for int
+                return 0x80000000u;
+            } else {
+                if (exp == 126) {
+                    return 0u;   // 1.???? * 2^(-1) round to 0, this condition branch could be merge to upper branch
+                } else {
+                    /*printf("exp>126: exp=%d ,frac=%d\n", exp, mantissa);*/
+                    int shiftN = exp - 127 - 23;
+                    if (shiftN  > 0) {
+                        return (sign  /*sign*/) * (
+                            (mantissa << (shiftN/*shift the fraction part*/))
+                            | (1 << (exp - 127)/*add mantissa's leading 1 back*/));
+
+                    } else {
+                        return (sign /*sign*/) * (
+                        (mantissa >> (-shiftN/*shift the fraction part*/))
+                        | (1 << (exp - 127)/*add mantissa's leading 1 back*/));
+                    }
+                }
+            }
+        } else {
+                // Exp: [-1, 125], E[-126, -2]
+                /*printf("exp<=126\n");*/
+                return 0u;  // all value thess than 1.??? * 2^(-2) round to 0
+        }
+    }
 }
 /*
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
@@ -452,5 +599,37 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    return 2;
+    int sign = 0x0;
+    int exp = 0x0;
+    int mantissa = 0x0;
+
+    if (x > 127) {
+        // Case 1: if x too large, return +INF
+        exp = 0xFF;
+        mantissa = 0x0;
+    } else {
+        if (x < -(126 + 23)) {
+            // Case 2: if x too small, return 0
+            // 0
+            exp = 0x0;
+            mantissa = 0x0;
+        } else {
+            // Case 2: TODO
+            if (x < -126) {
+                // Denormalized
+                exp = 0x0;
+                mantissa = (1 << (23 + (x + 126)));
+            } else {
+                // Normalized
+                // E = Exp - Bias
+                exp = x + 127;
+            }
+        }
+    }
+
+    int ret = (sign << 31) + (exp << 23) + mantissa;
+
+    /*printf("argument=%d, sign:%d, exp=%d, mantissa=%d, ret=%d\n", x, sign, exp, mantissa, ret);*/
+
+    return ret;
 }
