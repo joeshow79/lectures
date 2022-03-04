@@ -55,6 +55,95 @@ void transpose_by_blocking_diagonal(int M, int N, int A[N][M], int B[M][N], int 
     }
 }
 
+void transpose_by_blocking_diagonal_round(int M, int N, int A[N][M], int B[M][N], int ROW_BLOCK_SIZE, int COL_BLOCK_SIZE) {
+    int direction_left_to_right_out = 1;
+    for (int io = 0; io < N; io += ROW_BLOCK_SIZE) {
+
+        if (direction_left_to_right_out) {
+            for(int jo =0; jo < M; jo += COL_BLOCK_SIZE) {
+                int ii_bound = N > (io + ROW_BLOCK_SIZE) ? (io + ROW_BLOCK_SIZE) : N;
+                int ji_bound = M > (jo + COL_BLOCK_SIZE) ? (jo + COL_BLOCK_SIZE) : M;
+                int direction_left_to_right_in = 1;
+
+                for (int i = io; i < ii_bound; i++) {
+                    int diagonal_key = -1;
+                    int diagonal_value = -1;
+
+                    if (direction_left_to_right_in) {
+                        for (int j = jo; j < ji_bound; j++) {
+                            if (i == j) {
+                                diagonal_key = i;
+                                diagonal_value = A[i][j];
+                            } else {
+                                B[j][i] = A[i][j];
+                            }
+                        }
+                    } else {
+                        for (int j = ji_bound - 1; j >= jo; j--) {
+                            if (i == j) {
+                                diagonal_key = i;
+                                diagonal_value = A[i][j];
+                            } else {
+                                B[j][i] = A[i][j];
+                            }
+                        }
+                    }
+
+                    direction_left_to_right_in = ! direction_left_to_right_in;
+
+                    if (-1 != diagonal_key) {
+                        B[diagonal_key][diagonal_key] = diagonal_value;
+                        diagonal_key = -1;
+                    }
+                }
+            }
+        } else {
+            for(int jo = M - 1; jo >= 0 ; jo -= COL_BLOCK_SIZE) {
+                int ii_bound = N > (io + ROW_BLOCK_SIZE) ? (io + ROW_BLOCK_SIZE) : N;
+                int ji_bound = (jo - COL_BLOCK_SIZE) < 0 ? 0: (jo - COL_BLOCK_SIZE) ;
+                int direction_left_to_right_in = 1;
+
+                for (int i = io; i < ii_bound; i++) {
+                    int diagonal_key = -1;
+                    int diagonal_value = -1;
+
+                    if(direction_left_to_right_in) {
+                        for (int j = ji_bound; j <= jo; j++) {
+                            if (i == j) {
+                                diagonal_key = i;
+                                diagonal_value = A[i][j];
+                            } else {
+                                B[j][i] = A[i][j];
+                            }
+                        }
+                    } else {
+                        for (int j = jo; j >= ji_bound; j--) {
+                            if (i == j) {
+                                diagonal_key = i;
+                                diagonal_value = A[i][j];
+                            } else {
+                                B[j][i] = A[i][j];
+                            }
+                        }
+
+                    }
+
+                    direction_left_to_right_in = ! direction_left_to_right_in;
+
+                    if (-1 != diagonal_key) {
+                        B[diagonal_key][diagonal_key] = diagonal_value;
+                        diagonal_key = -1;
+                    }
+                }
+            }
+
+        }
+
+        // testing shows that apply the round style on the outer loop may degrade the performance
+        /*direction_left_to_right_out = ! direction_left_to_right_out;*/
+    }
+}
+
 void transpose_by_blocking_l2_diagonal(int M, int N, int A[N][M], int B[M][N], int L1_ROW_BLOCK_SIZE, int L1_COL_BLOCK_SIZE, int L2_ROW_BLOCK_SIZE, int L2_COL_BLOCK_SIZE) {
     for (int io = 0; io < N; io += L1_ROW_BLOCK_SIZE) {
         for(int jo =0; jo < M; jo += L1_COL_BLOCK_SIZE) {
@@ -408,7 +497,41 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
     }
 
     if ( (64 == M ) && (64 == N)) {
-        transpose_block4x4_diagonal(M, N, A, B);
+        /*transpose_block4x4_diagonal(M, N, A, B);*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 32, 32);  // miss :4289*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 32, 16);  // miss : 3847*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 32, 8);  // miss : 2963*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 32, 4);  // miss : 1771*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 32, 2);  // miss : 2795*/
+
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 16, 2);  // miss : 2795*/
+        transpose_by_blocking_diagonal_round(M, N, A, B, 16, 4);  // miss : 1771
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 16, 3);  // miss :2359*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 16, 5);  // miss : 2623*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 8, 5);  // miss : 2623*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 16, 8);  // miss : 2963*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 16, 16);  // miss : 3847*/
+
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 4, 4);  // miss : 2518*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 4, 8);  // miss : 3211*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 8, 8);  // miss : 2963*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 16, 8);   miss : 2963*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 32, 8);  // miss : 2963*/
+
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 8, 32);  // miss : 4289*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 8, 16);  // miss : 3847*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 8, 8);  // miss : 2963*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 8, 4);  // miss : 1771*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 4, 4);  // miss : 1811*/
+
+        // inner & outer loop with round fasion
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 8, 4);  // miss : 2486*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 4, 4);  // miss :2303*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 16, 4);  // miss :2486*/
+
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 4, 8);  // miss :3455*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 8, 8);  // miss :3430*/
+        /*transpose_by_blocking_diagonal_round(M, N, A, B, 16, 8);  // miss :3430*/
         return;
     }
 
@@ -446,7 +569,7 @@ void trans(int M, int N, int A[N][M], int B[M][N])
  */
 void registerFunctions()
 {
-    registerTransFunction(transpose_block_l2_4x4_diagonal, transpose_block_l2_4x4_diagonal_desc);
+    /*registerTransFunction(transpose_block_l2_4x4_diagonal, transpose_block_l2_4x4_diagonal_desc);*/
 
     /* Register your solution function */
     registerTransFunction(transpose_submit, transpose_submit_desc);
@@ -464,8 +587,8 @@ void registerFunctions()
 
     /*registerTransFunction(transpose_block2x4_diagonal, transpose_block2x4_diagonal_desc);*/
     /*registerTransFunction(transpose_block3x4_diagonal, transpose_block3x4_diagonal_desc);*/
-    registerTransFunction(transpose_block4x4_diagonal, transpose_block4x4_diagonal_desc);
-    /*registerTransFunction(transpose_block5x4_diagonal, transpose_block5x4_diagonal_desc);*/
+    /*registerTransFunction(transpose_block4x4_diagonal, transpose_block4x4_diagonal_desc);*/
+    /*[>registerTransFunction(transpose_block5x4_diagonal, transpose_block5x4_diagonal_desc);<]*/
     /*registerTransFunction(transpose_block6x4_diagonal, transpose_block6x4_diagonal_desc);*/
     /*registerTransFunction(transpose_block7x4_diagonal, transpose_block7x4_diagonal_desc);*/
     /*registerTransFunction(transpose_block8x4_diagonal, transpose_block8x4_diagonal_desc);*/
@@ -494,8 +617,8 @@ void registerFunctions()
     /*registerTransFunction(transpose_block2x8_diagonal, transpose_block2x8_diagonal_desc);*/
     /*registerTransFunction(transpose_block4x8_diagonal, transpose_block4x8_diagonal_desc);*/
     /*registerTransFunction(transpose_block8x8_diagonal, transpose_block8x8_diagonal_desc);*/
-    registerTransFunction(transpose_block16x8_diagonal, transpose_block16x8_diagonal_desc);
-    /*registerTransFunction(transpose_block32x8_diagonal, transpose_block32x8_diagonal_desc);*/
+    /*registerTransFunction(transpose_block16x8_diagonal, transpose_block16x8_diagonal_desc);*/
+    /*[>registerTransFunction(transpose_block32x8_diagonal, transpose_block32x8_diagonal_desc);<]*/
 
     /*[>registerTransFunction(transpose_block_l2_2x8_diagonal, transpose_block_l2_2x8_diagonal_desc);<]*/
     /*registerTransFunction(transpose_block_l2_4x8_diagonal, transpose_block_l2_4x8_diagonal_desc);*/
@@ -505,7 +628,7 @@ void registerFunctions()
 
     /*registerTransFunction(transpose_block16x16, transpose_block16x16_desc);*/
     /*registerTransFunction(transpose_block16x16_diagonal, transpose_block16x16_diagonal_desc);*/
-    registerTransFunction(transpose_block32x16_diagonal, transpose_block32x16_diagonal_desc);
+    /*registerTransFunction(transpose_block32x16_diagonal, transpose_block32x16_diagonal_desc);*/
 
     /* Register any additional transpose functions */
     registerTransFunction(trans, trans_desc);
