@@ -167,13 +167,14 @@ int main(int argc, char **argv)
 void eval(char *cmdline)
 {
 	static char *argv[MAXARGS];
-    char buf[MAXLINE];
+	char buf[MAXLINE];
 
-    strncpy(buf, cmdline, MAXLINE);
+	strncpy(buf, cmdline, MAXLINE);
 
 	int bg = parseline(cmdline, argv);
 
-    if (NULL == argv[0]) return;
+	if (NULL == argv[0])
+		return;
 
 	for (int i = 0; i < MAXARGS; ++i) {
 		if (NULL == argv[i]) {
@@ -183,61 +184,59 @@ void eval(char *cmdline)
 
 	if (0 == builtin_cmd(argv)) {
 
-        sigset_t mask, prev;
+		sigset_t mask, prev;
 
-        if(sigemptyset(&mask) < 0) {
-            unix_error("sigemptyset error");
-            exit(0);
-        }
+		if (sigemptyset(&mask) < 0) {
+			unix_error("sigemptyset error");
+		}
 
-        if(sigaddset(&mask, SIGCHLD) < 0) {
-            unix_error("sigaddset error");
-            exit(0);
-        }
+		if (sigaddset(&mask, SIGCHLD) < 0) {
+			unix_error("sigaddset error");
+		}
 
-        if(sigprocmask(SIG_BLOCK, &mask, &prev) < 0) {
-            unix_error("sigprocmask error");
-            exit(0);
-        }
+		if (sigprocmask(SIG_BLOCK, &mask, &prev) < 0) {
+			unix_error("sigprocmask error");
+		}
 
 		pid_t child_pid = fork();
 
 		if (0 == child_pid) {
 			// make the child process to in another process group to avoid the receiving
 			// of the signal from the shell(origional parent process)
-            if (setpgid(0, 0) < 0) {
-                unix_error("setpgid error.");
-            }
+			if (setpgid(0, 0) < 0) {
+				unix_error("setpgid error.");
+			}
 
-            if(sigprocmask(SIG_SETMASK, &prev, NULL) < 0) {
-                unix_error("sigprocmask error in child process");
-                exit(0);
-            }
+			if (sigprocmask(SIG_SETMASK, &prev, NULL) < 0) {
+				unix_error
+				    ("sigprocmask error in child process");
+			}
 
-            // signal and handler will not inherit
-            if(execve(argv[0], argv, environ) < 0) {
-                printf("%s: command not found!\n", argv[0]);
-                exit(0);
-            }
+			// signal and handler will not inherit
+			if (execve(argv[0], argv, environ) < 0) {
+				printf("%s: command not found!\n",
+				       argv[0]);
+				exit(0);
+			}
 		}
 
-        if(0 == addjob(jobs, child_pid, bg? BG:FG, buf)) {
-            unix_error("addjob error");
-        }
+		if (0 == addjob(jobs, child_pid, bg ? BG : FG, buf)) {
+			unix_error("addjob error");
+		}
 
-        if(sigprocmask(SIG_SETMASK, &prev, NULL) < 0) {
-            unix_error("sigprocmask error");
-           exit(0);
-        }
+		if (sigprocmask(SIG_SETMASK, &prev, NULL) < 0) {
+			unix_error("sigprocmask error");
+		}
 
 		if (!bg) {
-            waitfg(child_pid);
-        } else {
-            struct job_t* job = getjobpid(jobs, child_pid);
-            if(NULL != job) {
-                printf("[%d] (%d) %s", job->jid, job->pid, job->cmdline);
-            }
-        }
+			waitfg(child_pid);
+		} else {
+			struct job_t *job = getjobpid(jobs, child_pid);
+			if (NULL != job) {
+				printf("[%d] (%d) %s", job->jid, job->pid,
+				       job->cmdline);
+			}
+		}
 	}
 
 	return;
@@ -308,7 +307,7 @@ int builtin_cmd(char **argv)
 
 	cmd = "quit";
 	if (0 == strncmp(argv[0], cmd, strlen(cmd))) {
-        exit(0);
+		exit(0);
 	}
 
 	cmd = "jobs";
@@ -340,64 +339,69 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv)
 {
-    char* id = argv[1];
+	char *id = argv[1];
 
-    if (NULL != id) {
+	if (NULL != id) {
 
-        char* ret = strchr(id, '%');
+		char *ret = strchr(id, '%');
 
-        if(NULL == ret) {  // try to intepret as PID
-            int pid = atoi(id);
+		if (NULL == ret) {	// try to intepret as PID
+			int pid = atoi(id);
 
-            struct job_t* job = getjobpid(jobs, pid);
+			struct job_t *job = getjobpid(jobs, pid);
 
-            if(NULL != job) {
-                if(kill(-job->pid, SIGCONT) < 0) {
-                    unix_error("try to send signal SIGCONT with error");
-                    return;
-                }
+			if (NULL != job) {
+				if (kill(-job->pid, SIGCONT) < 0) {
+					unix_error
+					    ("try to send signal SIGCONT with error");
+				}
 
-                if (0 == strncmp(argv[0], "bg", 2)) {
-                    job->state = BG;
-                }
+				if (0 == strncmp(argv[0], "bg", 2)) {
+					job->state = BG;
+				}
 
-                if (0 == strncmp(argv[0], "fg", 2)) {
-                    job->state = FG;
-                    waitfg(job->pid);
-                }
-            } else {
-                printf("%s: argument must be a PID or %%jobid\n", argv[0]);
+				if (0 == strncmp(argv[0], "fg", 2)) {
+					job->state = FG;
+					waitfg(job->pid);
+				}
+			} else {
+				printf
+				    ("%s: argument must be a PID or %%jobid\n",
+				     argv[0]);
 
-                return;
-            }
-        } else {
-            int jid = atoi(id+1);
+				return;
+			}
+		} else {
+			int jid = atoi(id + 1);
 
-            struct job_t* job = getjobjid(jobs, jid);
+			struct job_t *job = getjobjid(jobs, jid);
 
-            if(NULL != job) {
-                if(kill(-job->pid, SIGCONT) < 0) {
-                    unix_error("try to send signal SIGCONT with error");
-                    return;
-                }
+			if (NULL != job) {
+				if (kill(-job->pid, SIGCONT) < 0) {
+					unix_error
+					    ("try to send signal SIGCONT with error");
+				}
 
-                if (0 == strncmp(argv[0], "bg", 2)) {
-                    job->state = BG;
-                }
+				if (0 == strncmp(argv[0], "bg", 2)) {
+					job->state = BG;
+				}
 
-                if (0 == strncmp(argv[0], "fg", 2)) {
-                    job->state = FG;
-                    waitfg(job->pid);
-                }
-            } else {
-                printf("%s: argument must be a PID or %%jobid\n", argv[0]);
+				if (0 == strncmp(argv[0], "fg", 2)) {
+					job->state = FG;
+					waitfg(job->pid);
+				}
+			} else {
+				printf
+				    ("%s: argument must be a PID or %%jobid\n",
+				     argv[0]);
 
-                return;
-            }
-        }
-    } else {
-        printf("%s command requires PID or %%jobid argument\n", argv[0]);
-    }
+				return;
+			}
+		}
+	} else {
+		printf("%s command requires PID or %%jobid argument\n",
+		       argv[0]);
+	}
 
 	return;
 }
@@ -407,23 +411,23 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
-    /*int status;*/
-    /*if(waitpid(pid, &status, WUNTRACED | WNOHANG) < 0) {*/
-        /*unix_error("waitpid error");*/
-    /*}*/
+	/*int status; */
+	/*if(waitpid(pid, &status, WUNTRACED | WNOHANG) < 0) { */
+	/*unix_error("waitpid error"); */
+	/*} */
 
-    while(1) {
-        volatile struct job_t* job = getjobpid(jobs, pid);
-        if (NULL == job) {
-            break;
-        }
+	while (1) {
+		volatile struct job_t *job = getjobpid(jobs, pid);
+		if (NULL == job) {
+			break;
+		}
 
-        if (FG == job->state) {
-            sleep(1);
-        } else {
-            break;
-        }
-    }
+		if (FG == job->state) {
+			sleep(1);
+		} else {
+			break;
+		}
+	}
 
 	return;
 }
@@ -441,24 +445,49 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig)
 {
-    pid_t pid;
-    int status;
+	int olderrno = errno;
 
-    if((pid = waitpid(-1, &status, WUNTRACED | WNOHANG)) >= 0) {
-        if(WIFSTOPPED(status)) {
-            sigtstp_handler(20);
-        } else {
-            struct job_t* job = getjobpid(jobs, pid);
-            if(NULL != job) {
-                if (ST != job->state) {
-                    deletejob(jobs, pid);
-                }
-            }
-        }
+	pid_t pid;
+	int status;
 
-    } else {
-        unix_error("waitpid error");
-    }
+	if ((pid = waitpid(-1, &status, WUNTRACED | WNOHANG)) >= 0) {
+		if (WIFSTOPPED(status)) {
+			sigtstp_handler(20);
+		} else {
+			struct job_t *job = getjobpid(jobs, pid);
+			if (NULL != job) {
+				if (ST != job->state) {
+					sigset_t mask, prev;
+
+					if (sigfillset(&mask) < 0) {
+						unix_error
+						    ("sigemptyset error");
+					}
+
+					if (sigprocmask
+					    (SIG_BLOCK, &mask,
+					     &prev) < 0) {
+						unix_error
+						    ("sigprocmask error");
+					}
+
+					deletejob(jobs, pid);
+
+					if (sigprocmask
+					    (SIG_BLOCK, &prev, NULL) < 0) {
+						unix_error
+						    ("sigprocmask error");
+						exit(0);
+					}
+				}
+			}
+		}
+
+	} else {
+		unix_error("waitpid error");
+	}
+
+	errno = olderrno;
 
 	return;
 }
@@ -470,19 +499,23 @@ void sigchld_handler(int sig)
  */
 void sigint_handler(int sig)
 {
-    pid_t pid = fgpid(jobs);
+	int olderrno = errno;
 
-    if(pid > 0) {
-        if(kill(-pid, SIGINT) < 0) {
-            unix_error("try to send signal SIGINT with error");
-            return;
-        }
+	pid_t pid = fgpid(jobs);
 
-        struct job_t* job = getjobpid(jobs, pid);
-        if(NULL != job) {
-            printf("Job [%d] (%d) terminated by signal %d\n", job->jid, job->pid, sig);
-        }
-    }
+	if (pid > 0) {
+		if (kill(-pid, SIGINT) < 0) {
+			unix_error("try to send signal SIGINT with error");
+		}
+
+		struct job_t *job = getjobpid(jobs, pid);
+		if (NULL != job) {
+			printf("Job [%d] (%d) terminated by signal %d\n",
+			       job->jid, job->pid, sig);
+		}
+	}
+
+	errno = olderrno;
 
 	return;
 }
@@ -494,21 +527,26 @@ void sigint_handler(int sig)
  */
 void sigtstp_handler(int sig)
 {
-    pid_t pid = fgpid(jobs);
+	int olderrno = errno;
 
-    if(pid > 0) {
-        if(kill(-pid, SIGTSTP) < 0) {
-            unix_error("try to send signal SIGTSTP with error");
-            return;
-        }
+	pid_t pid = fgpid(jobs);
 
-        struct job_t* job = getjobpid(jobs, pid);
-        if(NULL != job) {
-            job->state = ST;
+	if (pid > 0) {
+		if (kill(-pid, SIGTSTP) < 0) {
+			unix_error
+			    ("try to send signal SIGTSTP with error");
+		}
 
-            printf("Job [%d] (%d) stopped by signal %d\n", job->jid, job->pid, sig);
-        }
-    }
+		struct job_t *job = getjobpid(jobs, pid);
+		if (NULL != job) {
+			job->state = ST;
+
+			printf("Job [%d] (%d) stopped by signal %d\n",
+			       job->jid, job->pid, sig);
+		}
+	}
+
+	errno = olderrno;
 
 	return;
 }
